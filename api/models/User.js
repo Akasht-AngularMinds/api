@@ -35,8 +35,8 @@ const UserSchema = new mongoose.Schema(
       required: 'password is required'
     },
     cpassword:{
-      type: String,   
-       required: 'password is required'
+      type: String   
+     
     },
 
     mobile:{

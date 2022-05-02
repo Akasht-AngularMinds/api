@@ -8,7 +8,7 @@ const generateAccessToken = (user) => {
       expiresIn: "9000s",
     });
   };
-  var validatePassword = function (pass) {
+  var validatePassword = function(pass) {
     var re = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/  ;
     return re.test(pass)
   };
@@ -16,18 +16,21 @@ const generateAccessToken = (user) => {
 //REGISTER
 router.post("/register", async (req, res) => {
   try {
+    console.log("hello")
     const userv = await User.findOne({ email: req.body.email });
+    console.log(userv)
     if(userv){
       return  res.status(500).json("user already exist");
     }
 
     let passval=validatePassword(req.body.password)
     console.log(passval)
+    console.log(passval)
     //generate new password
-    if(passval && req.body.password==req.body.cpassword){
+    if(passval ){
     const salt = await bcrypt.genSalt(10);
     var hashedPassword = await bcrypt.hash(req.body.password, salt);
-    var hashedCPassword = await bcrypt.hash(req.body.cpassword, salt);
+    
 
     }else{
       return  res.status(404).json("password is not valid");
@@ -41,7 +44,8 @@ router.post("/register", async (req, res) => {
       lastname:req.body.lastname,
       email: req.body.email,
       password: hashedPassword,
-      cpassword:hashedCPassword
+      isAdmin:req.body.isAdmin,
+    
     });
 
     //save user and respond
@@ -57,16 +61,19 @@ router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     !user && res.status(404).json("user not found");
-
+    console.log(user)
     const validPassword = await bcrypt.compare(req.body.password, user.password)
     !validPassword && res.status(400).json("wrong password")
-
+     console.log(validPassword)
     const accessToken = generateAccessToken(user);
+    console.log(user)
     res.json({
-      firstname: user.firstname,
-      lastname:user.lastname,
-      isAdmin: user.isAdmin,
-      accessToken
+      // firstname: user.firstname,
+      // lastname:user.lastname,
+      // isAdmin: user.isAdmin,
+      // accessToken,
+      // userId: user._id
+      user
     });
 
   } catch (err) {

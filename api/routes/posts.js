@@ -2,6 +2,7 @@ const router = require("express").Router();
 const Post = require("../models/Post");
 const User = require("../models/User");
 const jwt =require("jsonwebtoken");
+const upload =require("../middleware/upload");
 
 
 
@@ -16,18 +17,22 @@ const verify = (req, res, next) => {
       }
       console.log(user)
       req.user = user;
+      console.log(user)
       next();
     });
   } else {
     res.status(401).json("You are not authenticated!");
   }
 };
-
 //create a post
 console.log(Post)
 console.log(User)
-router.post("/", async (req, res) => {
-  const newPost = new Post(req.body);
+router.post("/", upload.single("image"), async (req, res) => {
+  const newPost = new Post({
+    desc:req.body.desc,
+    userId:req.body.userId,
+    img:req.file.path
+  });
   try {
     const savedPost = await newPost.save();
     res.status(200).json(savedPost);
@@ -40,6 +45,8 @@ router.post("/", async (req, res) => {
 router.put("/update/:id",verify, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
+    console.log(req.user.id)
+    console.log(req.body.userId)
     if (req.user.id === req.body.userId) {
       await post.updateOne({ $set: req.body });
       res.status(200).json("the post has been updated");
@@ -52,9 +59,14 @@ router.put("/update/:id",verify, async (req, res) => {
 });
 //delete a post
 router.delete("/del/:id",verify, async (req, res) => {
+  console.log("hello")
   try {
     const post = await Post.findById(req.params.id);
+    console.log(req.user.id)
+    console.log(req.body.userId)
+
     if (req.user.id === req.body.userId) {
+      
       await post.deleteOne();
       res.status(200).json("the post has been deleted");
     } else {

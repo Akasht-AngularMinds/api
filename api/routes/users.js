@@ -2,6 +2,7 @@ const User = require("../models/User");
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt =require("jsonwebtoken")
+const upload = require("../middleware/upload");
 
 const verify = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -22,7 +23,7 @@ const verify = (req, res, next) => {
 };
 
 //update user
-router.put("/:id",verify, async (req, res) => {
+router.put("/:id", verify, upload.single("image"), async (req, res) => {
   if (req.user.id === req.params.id || req.body.isAdmin) {
     if (req.body.password) {
       try {
@@ -34,7 +35,7 @@ router.put("/:id",verify, async (req, res) => {
     }
     try {
       const user = await User.findByIdAndUpdate(req.params.id, {
-        $set: req.body,
+        $set: req.body, profilePicture: req.file ? req.file.path :""
       });
       res.status(200).json({user,message:"Account has been updated"});
     } catch (err) {

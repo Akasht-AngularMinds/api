@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const User  = require("../models/User");
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const path = require("path");
@@ -42,7 +42,7 @@ const upload = multer({ storage: storage });
 //     res.status(401).json("You are not authenticated!");
 //   }
 // };
-  router.post("/hello",(req,res)=>{
+  router.post("/up",(req,res)=>{
       res.send("post req")
   })
 

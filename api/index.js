@@ -15,8 +15,9 @@ const uploadRoute = require("./routes/upload.js");
 dotenv.config();
 console.log(process.env.MONGO_URL)
 
-const connect=()=>{
-  let conn =  mongoose.connect(
+
+
+  mongoose.connect(
     process.env.MONGO_URL,
     { useNewUrlParser: true, useUnifiedTopology: true },
     () => {
@@ -24,19 +25,13 @@ const connect=()=>{
     }
   );
 
-}
-connect()
-
-
-app.use("/images", express.static(path.join(__dirname, "public/images")));
-
+app.use("/public/images", express.static(path.join(__dirname, "public/images")));
 
 //middleware
 app.use(express.json());
 app.use(helmet());
 app.use(morgan("common"));
 
- 
 app.use("/api/upload",uploadRoute)
 
 app.use("/api/auth", authRoute);
