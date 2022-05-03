@@ -37,7 +37,8 @@ router.put("/:id", verify, upload.single("image"), async (req, res) => {
       const user = await User.findByIdAndUpdate(req.params.id, {
         $set: req.body, profilePicture: req.file ? req.file.path :""
       });
-      res.status(200).json({user,message:"Account has been updated"});
+      const user1 = await User.findById(req.params.id);
+      res.status(200).json({user1,message:"Account has been updated"});
     } catch (err) {
       return res.status(500).json(err);
     }

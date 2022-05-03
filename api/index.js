@@ -11,10 +11,19 @@ const postRoute = require("./routes/posts");
 const router = express.Router();
 const path = require("path");
 const uploadRoute = require("./routes/upload.js");
+const passport = require('passport');
+const cookieSession = require('cookie-session')
+var cors = require('cors')
 
+require('./passport-setup');
 dotenv.config();
 console.log(process.env.MONGO_URL)
+app.use(
+  cookieSession({ name: "session", keys: ["lama"], maxAge: 24 * 60 * 60 * 100 })
+);
 
+app.use(passport.initialize());
+app.use(passport.session());
 
 
   mongoose.connect(
@@ -26,6 +35,14 @@ console.log(process.env.MONGO_URL)
   );
 
 app.use("/public/images", express.static(path.join(__dirname, "public/images")));
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true,
+  })
+);
 
 //middleware
 app.use(express.json());

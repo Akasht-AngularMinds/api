@@ -83,7 +83,8 @@ router.put("/:id/comments", async (req, res) => {
       let comment={userId:req.body.userId,comment:req.body.comment}
       console.log(comment)
       await post.updateOne({ $push: {comments:comment}} );
-      res.status(200).json(post);
+    const post1 = await Post.findById(req.params.id)
+      res.status(200).json(post1);
    
   } catch (err) {
     res.status(500).json(err);
@@ -92,14 +93,27 @@ router.put("/:id/comments", async (req, res) => {
 //like / dislike a post
 
 router.put("/:id/like", async (req, res) => {
+  console.log(req.body)
   try {
     const post = await Post.findById(req.params.id);
+    const user =await User.findById(req.body.userId);
+    console.log(post);
+    if (user){
     if (!post.likes.includes(req.body.userId)) {
+      console.log(req.body.userId)
       await post.updateOne({ $push: { likes: req.body.userId } });
-      res.status(200).json({post:post._doc,message:"The post has been liked"});
+      const post1 = await Post.findById(req.params.id)
+      res.status(200).json({post:post1._doc,message:"The post has been liked"});
     } else {
+      console.log("hello")
       await post.updateOne({ $pull: { likes: req.body.userId } });
-      res.status(200).json({post:post._doc,message:"The post has been disliked"});
+      const post1 = await Post.findById(req.params.id)
+
+      res.status(200).json({post:post1._doc,message:"The post has been disliked"});
+    }
+    }else{
+      res.status(200).json("user is not valid");
+
     }
   } catch (err) {
     res.status(500).json(err);
