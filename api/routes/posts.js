@@ -4,8 +4,6 @@ const User = require("../models/User");
 const jwt =require("jsonwebtoken");
 const upload =require("../middleware/upload");
 
-
-
 const verify = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (authHeader) {
@@ -27,7 +25,9 @@ const verify = (req, res, next) => {
 //create a post
 console.log(Post)
 console.log(User)
-router.post("/", upload.single("image"), async (req, res) => {
+router.post("/", verify, upload.single("image"), async (req, res) => {
+  if(req.user.id === req.body.userId)
+  {
   const newPost = new Post({
     desc:req.body.desc,
     userId:req.body.userId,
@@ -38,7 +38,13 @@ router.post("/", upload.single("image"), async (req, res) => {
     res.status(200).json(savedPost);
   } catch (err) {
     res.status(500).json(err);
+
+
   }
+}else{
+   return res.status(404).json("you are not valid user");
+
+}
 });
 //update a post
 
@@ -84,7 +90,8 @@ router.put("/:id/comments", async (req, res) => {
       console.log(comment)
       await post.updateOne({ $push: {comments:comment}} );
     const post1 = await Post.findById(req.params.id)
-      res.status(200).json(post1);
+    const user=await User.findById(req.body.userId)
+    res.status(200).json({post1,user});
    
   } catch (err) {
     res.status(500).json(err);

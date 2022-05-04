@@ -1,31 +1,37 @@
-const dotenv = require("dotenv");
-
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 // const GithubStrategy = require("passport-github2").Strategy;
 // const FacebookStrategy = require("passport-facebook").Strategy;
+
 const passport = require("passport");
-dotenv.config();
 
-console.log(process.env.GOOGLE_CLIENT_ID)
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
-    
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+// MONGO_URL = mongodb + srv://AkashMDB:atktmdb123%40@cluster0.wt1qr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+// GOOGLE_CLIENT_ID = 762736905727 - u4gko4aeh379p4g9qt4rh067e2hhdclc.apps.googleusercontent.com
+// GOOGLE_CLIENT_SECRET = GOCSPX - PTisS3DQJYXAa0OM8aktBwR9hHbx
 
-// GITHUB_CLIENT_ID = "your id";
-// GITHUB_CLIENT_SECRET = "your id";
 
-// FACEBOOK_APP_ID = "your id";
-// FACEBOOK_APP_SECRET = "your id";
+
+const GOOGLE_CLIENT_ID = "762736905727-u4gko4aeh379p4g9qt4rh067e2hhdclc.apps.googleusercontent.com"
+    ;
+const GOOGLE_CLIENT_SECRET = "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";
+
+;
+
+
+const defaultScope = [
+    'https://www.googleapis.com/auth/plus.me',
+    'https://www.googleapis.com/auth/userinfo.email',
+];
 
 passport.use(
-
     new GoogleStrategy(
         {
             clientID: GOOGLE_CLIENT_ID,
             clientSecret: GOOGLE_CLIENT_SECRET,
-            callbackURL: "/auth/google/callback",
+            callbackURL: "/api/auth/google/callback",
+            scope: defaultScope
         },
         function (accessToken, refreshToken, profile, done) {
+            // console.log(accessToken)
             done(null, profile);
         }
     )
